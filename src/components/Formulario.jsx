@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Error from './Error'
 
 /*// Estructura del state
 import {useState} from 'react'
@@ -15,7 +16,8 @@ Donde:  cliente = nuestra funcion principal
 
 */
 
-const Formulario = () => {
+const Formulario = ({pacientes, setPacientes}) => {
+
     // El state tiene que ser declarado siempre antes del return 
     const [nombre, setNombre] = useState('')
     const [propietario, setPropietario] = useState('')
@@ -25,26 +27,53 @@ const Formulario = () => {
 
     const [error, setError] = useState(false)
 
+    const generarID = () => {
+        const random = Math.random().toString(36).substring(2)
+        const fecha = Date.now().toString(36)
+
+        return random + fecha
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
         // Validacion del formulario
         if([nombre, propietario, email, fecha, sintomas].includes('')){
-            console.log('Hay almenos un campo vacio');
 
             setError(true)
 
             setTimeout(() => {
                 setError(false)
             }, 2000);
-        } else {
-            console.log('lleno');
 
-            setError(false)
+            return
         }
 
+        setError(false)
+
+        // Objeto Paciente - para la integracion al prop de pacientes
+        const objetoPaciente = { 
+            nombre,
+            propietario,
+            email,
+            fecha,
+            sintomas,
+            idx: generarID()
+        }
+
+        setPacientes([...pacientes, objetoPaciente])
+
+        // Reiniciar el formulario
+
+        setNombre('')
+        setPropietario('')
+        setEmail('')
+        setFecha('')
+        setSintomas('')
     }
 
-    return ( 
+    
+
+    return (
         <div className="md:w-1/2 lg:w-2/5 mx-5">
             <h2 className="font-black text-3xl text-center">Seguimiento Pacientes</h2>
 
@@ -58,11 +87,9 @@ const Formulario = () => {
                 className="bg-white shadow-md rounded-lg py-10 px-5 mb-10 uppercase font-bold"
             >
 
-                {error && (
-                    <div className='bg-red-800 text-white text-center p-3 uppercase mb-3 rounded-md'>
-                        <p>Todos los campos son obligatorios</p>
-                    </div>
-                )}
+                {error && <Error>
+                    <p>Hay al menos un elemento faltante</p>
+                </Error>}
 
                 <div className="mb-5">
                     <label htmlFor="mascota" className="block text-gray-700">
