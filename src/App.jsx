@@ -1,14 +1,37 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
 import Formulario from "./components/Formulario"
 import Header from "./components/Header"
 import ListadoPacientes from "./components/ListadoPacientes"
 
 function App() {
 
-  const [pacientes, setPacientes] = useState([])
+  const [pacientes, setPacientes] = useState([ ])
+  const [paciente, setPaciente] = useState({})
 
-  console.log(pacientes)
+  // == Local Storage ==
+  // Los effect se ejecutan de arriba a abajo 
+  useEffect(() => {
+    // Si el effect esperado es global solo itera una vez
+    const obtenerLS = () => {
+      const pacientesLS = JSON.parse( localStorage.getItem('pacientes')) || []
+      setPacientes(pacientesLS)
+    }
+    obtenerLS()
+  }, [])
 
+  useEffect(() => {
+    // Si el effect esperado es especifico se itera multiples veces
+    localStorage.setItem('pacientes', JSON.stringify(pacientes))
+  }, [pacientes])
+
+  // == Delete Patient ==
+  const eliminarPaciente = idx => {
+    const pacientesFiltrados = pacientes.filter(paciente => paciente.idx !== idx)
+    setPacientes(pacientesFiltrados)
+  }
+
+  // == Component Body ==
   return (
     <div className="container mx-auto mt-20">
 
@@ -19,10 +42,14 @@ function App() {
         <Formulario
           pacientes={pacientes}
           setPacientes={setPacientes}
+          paciente={paciente}
+          setPaciente={setPaciente}
         />
         
         <ListadoPacientes
           pacientes={pacientes}
+          setPaciente={setPaciente}
+          eliminarPaciente={eliminarPaciente}
         />
 
       </div>
@@ -33,8 +60,7 @@ function App() {
 
 export default App
 
-/*
-Notas :
+/* Notas :
 * En anteriores verciones se utilizaba import Raact from React, si trabajamos en un proyecto que lo tenga es importante no eliminarlo
 * Toda funcion o componente debe conetener un return, si son multiples elementos deben estar rodeados por un elemento padre, en caso de requerir un elemento padre debemos usar un FRACTMENT que serian solo las <> ejem:
   <> 

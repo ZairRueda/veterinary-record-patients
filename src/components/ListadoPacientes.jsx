@@ -1,9 +1,7 @@
 import Paciente from "./Paciente"
 
-const ListadoPacientes = ({pacientes}) => {
-
-
-
+// == List of Patients - Any Patients - This component uses props
+const ListadoPacientes = ({pacientes, setPaciente, eliminarPaciente}) => {
 
     return (
         <div className="md:w-1/2 lg:w-3/5 md:h-screen md:overflow-y-scroll">
@@ -11,15 +9,12 @@ const ListadoPacientes = ({pacientes}) => {
             {pacientes && pacientes.length ? (
 
                 <>
-
                 <h2 className="font-black text-3xl text-center">Listado Pacientes</h2>
 
-                <p className="text-lg mt-5 text-center mb-10">
+                <p className="font-semibold text-lg mt-5 text-center mb-10 ">
                     Administra tus {''}
                     <span className="text-indigo-600 font-bold">Pacientes y Citas</span>
                 </p>
-
-
 
                 {/* Note
                     Siempre que vayamos a mostrar un listado con .map 
@@ -32,6 +27,8 @@ const ListadoPacientes = ({pacientes}) => {
                     <Paciente
                         key={paciente.idx}
                         paciente={paciente}
+                        setPaciente={setPaciente}
+                        eliminarPaciente={eliminarPaciente}
                     />
                 ))}
 
@@ -41,16 +38,12 @@ const ListadoPacientes = ({pacientes}) => {
                 <>
                 <h2 className="font-black text-3xl text-center">Aun no hay pacientes</h2>
 
-                <p className="text-lg mt-5 text-center mb-10">
+                <p className="font-semibold text-lg mt-5 text-center mb-10">
                     Agrega tus pacientes, {''}
                     <span className="text-indigo-600 font-bold">aqui podras administrarlos</span>
                 </p>
                 </>
             )}
-
-
-
-            
 
         </div>
     )

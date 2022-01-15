@@ -1,23 +1,9 @@
 import { useState, useEffect } from 'react'
 import Error from './Error'
 
-/*// Estructura del state
-import {useState} from 'react'
+const Formulario = ({pacientes, setPacientes, paciente, setPaciente}) => {
 
-const [cliente, setCliente] = useState({})
-
-Donde:  cliente = nuestra funcion principal
-        setCliente = la funcion con la que integramos valore y modificamos al funcion principal
-        ({}) = el valor inicial de nuestra funcion 
-            este puede ser:
-                (0) - un total
-                ([]) - un arreglo
-                (false) - un modal
-
-*/
-
-const Formulario = ({pacientes, setPacientes}) => {
-
+    // States of Patient
     // El state tiene que ser declarado siempre antes del return 
     const [nombre, setNombre] = useState('')
     const [propietario, setPropietario] = useState('')
@@ -25,8 +11,26 @@ const Formulario = ({pacientes, setPacientes}) => {
     const [fecha, setFecha] = useState('')
     const [sintomas, setSintomas] = useState('')
 
+    // State for check
     const [error, setError] = useState(false)
 
+    useEffect(() => {
+
+        // == Check to patient ==
+        // Forma de comprobar si un objeto tiene algo - Object.keys(objetoEnCuestion)
+        if (Object.keys(paciente).length > 0) {
+            setNombre(paciente.nombre)
+            setPropietario(paciente.propietario)
+            setEmail(paciente.email)
+            setFecha(paciente.fecha)
+            setSintomas(paciente.sintomas)
+            // console.log(paciente.idx);
+
+        }
+
+    }, [paciente])
+    
+    // ID is required to make a unique patient for after check and identification
     const generarID = () => {
         const random = Math.random().toString(36).substring(2)
         const fecha = Date.now().toString(36)
@@ -34,6 +38,7 @@ const Formulario = ({pacientes, setPacientes}) => {
         return random + fecha
     }
 
+    // Validate Form
     const handleSubmit = (e) => {
         e.preventDefault();
         // Validacion del formulario
@@ -56,14 +61,29 @@ const Formulario = ({pacientes, setPacientes}) => {
             propietario,
             email,
             fecha,
-            sintomas,
-            idx: generarID()
+            sintomas
         }
 
-        setPacientes([...pacientes, objetoPaciente])
+        // Check Edit Patient
+        if(paciente.idx) {
+            // Editando Registro
+            objetoPaciente.idx = paciente.idx
 
-        // Reiniciar el formulario
+            const pacientesActualizados = pacientes.map(pacienteState => pacienteState.idx === paciente.idx ? objetoPaciente : pacienteState)
 
+            setPacientes(pacientesActualizados)
+
+            setPaciente({})
+        } else {
+        // If not, make a new register
+
+            objetoPaciente.idx = generarID()
+
+            setPacientes([...pacientes, objetoPaciente])
+
+        }
+
+        // Reload From States
         setNombre('')
         setPropietario('')
         setEmail('')
@@ -77,7 +97,7 @@ const Formulario = ({pacientes, setPacientes}) => {
         <div className="md:w-1/2 lg:w-2/5 mx-5">
             <h2 className="font-black text-3xl text-center">Seguimiento Pacientes</h2>
 
-            <p className="text-lg mt-5 text-center mb-10">
+            <p className="font-semibold text-lg mt-5 text-center mb-10">
                 Añade Pacientes y {''}
                 <span className="text-indigo-600 font-bold">Administralos</span>
             </p>
@@ -100,7 +120,7 @@ const Formulario = ({pacientes, setPacientes}) => {
                         id="mascota"
                         type="text"
                         placeholder="Nombre de la mascota"
-                        className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="font-semibold border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md bg-gray-50 shadow-inner shadow-gray-200"
                         value={nombre}
                         onChange={ (e) => setNombre(e.target.value)}
                     />
@@ -115,7 +135,7 @@ const Formulario = ({pacientes, setPacientes}) => {
                         id="propietario"
                         type="text"
                         placeholder="Nombre del Propietario"
-                        className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="font-semibold border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md bg-gray-50 shadow-inner shadow-gray-200"
                         value={propietario}
                         onChange={ (e) => setPropietario(e.target.value)}
                     />
@@ -130,7 +150,7 @@ const Formulario = ({pacientes, setPacientes}) => {
                         id="email"
                         type="email"
                         placeholder="Email Contacto Propietario"
-                        className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="font-semibold border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md bg-gray-50 shadow-inner shadow-gray-200"
                         value={email}
                         onChange={ (e) => setEmail(e.target.value)}
                     />
@@ -144,7 +164,7 @@ const Formulario = ({pacientes, setPacientes}) => {
                     <input
                         id="fecha"
                         type="date"
-                        className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="font-semibold border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md bg-gray-50 shadow-inner shadow-gray-200"
                         value={fecha}
                         onChange={ (e) => setFecha(e.target.value)}
                     />
@@ -158,7 +178,7 @@ const Formulario = ({pacientes, setPacientes}) => {
                     <input
                         id="sintomas"
                         placeholder="Describe los sintomas"
-                        className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="font-semibold border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md bg-gray-50 shadow-inner shadow-gray-200"
                         value={sintomas}
                         onChange={ (e) => setSintomas(e.target.value)}
                     />
@@ -166,8 +186,8 @@ const Formulario = ({pacientes, setPacientes}) => {
 
                 <input
                     type="submit"
-                    className="bg-indigo-600 w-full p-3 text-white uppercase font-bold cursor-pointer hover:bg-indigo-700"
-                    value="Agregar Paciente"
+                    className="bg-indigo-600 w-full p-3 text-white uppercase font-bold cursor-pointer hover:bg-indigo-700 rounded-lg active:translate-x-1 active:translate-y-1 shadow-md shadow-indigo-200"
+                    value={paciente.idx ? 'Editar Paciente' : 'Agregar Paciente'}
                 />
             </form>
         </div>

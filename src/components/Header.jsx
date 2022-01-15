@@ -6,6 +6,7 @@ function Header() {
             <span className="text-indigo-600">Veterinaria</span> 
         </h1>
     )
+    
 }
 
 export default Header;
